@@ -4,29 +4,29 @@
   fetchurl,
   autoPatchelfHook,
   versionCheckHook,
+  nix-update-script,
 }:
 let
-  wholeVersion = "1.0.8-6513509081677824"; # unfortunately this has dumb versioning
-  version = builtins.head (lib.splitString "-" wholeVersion);
+  version = "1.0.8";
 
   throwSystem = throw "Unsupported system: ${stdenvNoCC.hostPlatform.system}";
 
   sourceData = {
     x86_64-linux = fetchurl {
-      url = "https://storage.googleapis.com/antigravity-public/antigravity-cli/${wholeVersion}/linux-x64/cli_linux_x64.tar.gz";
-      hash = "sha256-/BxcglSN6NqZdEbq50MypFW4bv2bCN37L0PqcuYz+e4=";
+      url = "https://github.com/google-antigravity/antigravity-cli/releases/download/${version}/agy_cli_linux_x64.tar.gz";
+      hash = "sha256-24yp08jM4GUecrb/+oN04nmcVVTZTfKx+eQrtRV0W/8=";
     };
     aarch64-linux = fetchurl {
-      url = "https://storage.googleapis.com/antigravity-public/antigravity-cli/${wholeVersion}/linux-arm/cli_linux_arm64.tar.gz";
-      hash = "sha256-QWQevvVezRdubRbG3V64C/XMHunfDsdA1OM8yhHoCHA=";
+      url = "https://github.com/google-antigravity/antigravity-cli/releases/download/${version}/agy_cli_linux_arm64.tar.gz";
+      hash = "sha256-zbxR/82KK5SZH9Nshm+whVz67R4u8Ksfzzvntko/n3E=";
     };
     aarch64-darwin = fetchurl {
-      url = "https://storage.googleapis.com/antigravity-public/antigravity-cli/${wholeVersion}/darwin-arm/cli_mac_arm64.tar.gz";
-      hash = "sha256-j+/brIYCKjIOa0KSGZHt4Ic4tjTzOrfPtA4J8iY9tHE=";
+      url = "https://github.com/google-antigravity/antigravity-cli/releases/download/${version}/agy_cli_mac_arm64.tar.gz";
+      hash = "sha256-HCNO6NMWRb+HTbG3HV4CQhxjUGYcig9AjasxBQG8W5Q=";
     };
     x86_64-darwin = fetchurl {
-      url = "https://storage.googleapis.com/antigravity-public/antigravity-cli/${wholeVersion}/darwin-x64/cli_mac_x64.tar.gz";
-      hash = "sha256-0Cp76whEYtBdZS6GOnC+qqICGoqexX+v3KCFJmfaFAU=";
+      url = "https://github.com/google-antigravity/antigravity-cli/releases/download/${version}/agy_cli_mac_x64.tar.gz";
+      hash = "sha256-VIJsUjWNwBQG2vTdtzvWIK5rkeN2vqWrwQtuCLR/jN8=";
     };
   };
 in
@@ -57,10 +57,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   nativeInstallCheckInputs = [ versionCheckHook ];
   doInstallCheck = true;
 
-  passthru = {
-    inherit wholeVersion; # for the updateScript
-    updateScript = ./update.sh;
-  };
+  passthru.updateScript = nix-update-script { };
 
   meta = {
     description = "Google's Go-based terminal user interface (TUI) agent client";
